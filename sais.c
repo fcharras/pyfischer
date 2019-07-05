@@ -46,13 +46,13 @@
 #define SAIS_MYFREE(_ptr, _num, _type) free((_ptr))
 #define chr(_a) (cs == sizeof(sais_index_type) ? ((sais_index_type *)T)[(_a)] : ((unsigned char *)T)[(_a)])
 
-/* qsort int comparison function */ 
-int int_cmp(const void *a, const void *b) 
-{ 
-  const int *ia = (const int *)a; // casting pointer types 
+/* qsort int comparison function */
+int int_cmp(const void *a, const void *b)
+{
+  const int *ia = (const int *)a; // casting pointer types
   const int *ib = (const int *)b;
-  return *ia  - *ib; 
-} 
+  return *ia  - *ib;
+}
 
 /* find the start or end of each bucket */
 static
@@ -316,7 +316,7 @@ static void induceSAandLCP(const void *T, sais_index_type *SA,
   sais_index_type i, bb;         // indices in SA/LCP (origin/target)
   sais_index_type j;             // position in text
   sais_index_type c0, c1;        // characters (new/last)
-  
+
   sais_index_type lcp;           // LCP-value
   sais_index_type l;             // for finding LCP at L/S-seam
   sais_index_type start, end, stack_end; // for inducing the LCP-values
@@ -656,7 +656,7 @@ static sais_index_type sais_main(const void *T, sais_index_type *SA,
         RA[j--] = SA[i] - 1;
       }
     }
-    
+
     if(sais_main(RA, SA, NULL, newfs, m, name, sizeof(sais_index_type), 0, 0) != 0) {
       if(flags & 1) { SAIS_MYFREE(C, k, sais_index_type); }
       return -2;
@@ -826,44 +826,8 @@ static sais_index_type sais_main(const void *T, sais_index_type *SA,
 /*---------------------------------------------------------------------------*/
 
 int
-sais(unsigned char *T, int *SA, int* LCP, int n) {
-  if((T == NULL) || (SA == NULL) || (LCP == NULL) || (n < 0)) { return -1; }
+sais_lcp_int(const int *T, int *SA, int* LCP, int n, int k) {
+  if((T == NULL) || (SA == NULL) || (LCP == NULL) || (n < 0) || (k <= 0)) { return -1; }
   if(n <= 1) { if(n == 1) { SA[0] = 0; LCP[0] = 0; } return 0; }
-  T[n - 1] = 0;
-  return sais_main(T, SA, LCP, 0, n, UCHAR_SIZE, sizeof(unsigned char), 0,1);
-}
-
-int
-sais_int(const int *T, int *SA, int n, int k) {
-  if((T == NULL) || (SA == NULL) || (n < 0) || (k <= 0)) { return -1; }
-  if(n <= 1) { if(n == 1) { SA[0] = 0; } return 0; }
-  return sais_main(T, SA, NULL, 0, n, k, sizeof(int), 0, 1);
-}
-
-int
-sais_bwt(const unsigned char *T, unsigned char *U, int *A, int n) {
-  int i, pidx;
-  if((T == NULL) || (U == NULL) || (A == NULL) || (n < 0)) { return -1; }
-  if(n <= 1) { if(n == 1) { U[0] = T[0]; } return n; }
-  pidx = sais_main(T, A, NULL, 0, n, UCHAR_SIZE, sizeof(unsigned char), 1,1);
-  if(pidx < 0) { return pidx; }
-  U[0] = T[n - 1];
-  for(i = 0; i < pidx; ++i) { U[i + 1] = (unsigned char)A[i]; }
-  for(i += 1; i < n; ++i) { U[i] = (unsigned char)A[i]; }
-  pidx += 1;
-  return pidx;
-}
-
-int
-sais_int_bwt(const int *T, int *U, int *A, int n, int k) {
-  int i, pidx;
-  if((T == NULL) || (U == NULL) || (A == NULL) || (n < 0) || (k <= 0)) { return -1; }
-  if(n <= 1) { if(n == 1) { U[0] = T[0]; } return n; }
-  pidx = sais_main(T, A, NULL, 0, n, k, sizeof(int), 1,1);
-  if(pidx < 0) { return pidx; }
-  U[0] = T[n - 1];
-  for(i = 0; i < pidx; ++i) { U[i + 1] = A[i]; }
-  for(i += 1; i < n; ++i) { U[i] = A[i]; }
-  pidx += 1;
-  return pidx;
+  return sais_main(T, SA, LCP, 0, n, k, sizeof(int), 0, 1);
 }
