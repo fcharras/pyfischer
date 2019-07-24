@@ -17,7 +17,7 @@ It seems that it is required that the last element of the input array must be st
 import pyfischer
 import numpy as np
 
-mississipi = np.array([2, 1, 4, 4, 1, 4, 4, 1, 3, 3, 1, 0], dtype=np.int32)
-sa, lcp = pyfischer.sais_lcp_int(mississipi, mississipi.max() + 1)
+mississippi = np.array([2, 1, 4, 4, 1, 4, 4, 1, 3, 3, 1, 0], dtype=np.int32)
+sa, lcp = pyfischer.sais_lcp_int(mississippi, mississippi.max() + 1)
 ```
 

@@ -11,7 +11,7 @@ pyfischer = Extension(
 
 setup(
     name='pyfischer',
-    version='0.1',
+    version='0.2',
     description='A Python module wrapper for the SA-IS LCP algorithm by Johannes Fischer.',
     author='Franck Charras',
     author_email='franck@sancare.fr',

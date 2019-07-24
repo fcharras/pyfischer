@@ -14,8 +14,9 @@ int  not_intvector(PyArrayObject *vec);
 /* Create 1D Carray from PyArray */
 int *pyvector_to_Carrayptrs(PyArrayObject *arrayin)
 {
-    return (int *) arrayin->data;  /* pointer to arrayin data as double */
+    return (int *) PyArray_DATA(arrayin); /* pointer to arrayin data as int */
 }
+
 
 /* Check that PyArrayObject is an int type and a vector */
 int  not_intvector(PyArrayObject *vec)
@@ -56,11 +57,13 @@ static PyObject *python_sais_int(PyObject *self, PyObject *args)
             PyErr_SetString(PyExc_StopIteration, "Array elements must be >= 0 and < k (alphabet size).");
             return NULL;
         }
-    npy_intp dims[2];
-    dims[0] = n+1;  // +1 for computing LCP
-    SA_np = (PyArrayObject *) PyArray_ZEROS(1, dims, NPY_INT, 0);
-    dims[0] = n;
-    LCP_np = (PyArrayObject *) PyArray_ZEROS(1, dims, NPY_INT, 0);
+    npy_intp dims_sa[2];
+    dims_sa[0] = n+1;  // +1 for computing LCP
+    SA_np = (PyArrayObject *) PyArray_ZEROS(1, dims_sa, NPY_INT, 0);
+
+    npy_intp dims_lcp[2];
+    dims_lcp[0] = n;
+    LCP_np = (PyArrayObject *) PyArray_ZEROS(1, dims_lcp, NPY_INT, 0);
     SA = pyvector_to_Carrayptrs(SA_np);
     LCP = pyvector_to_Carrayptrs(LCP_np);
     int res = sais_lcp_int(T, SA, LCP, n, k);
@@ -71,6 +74,7 @@ static PyObject *python_sais_int(PyObject *self, PyObject *args)
     }
     return Py_BuildValue("NN", SA_np, LCP_np);
 }
+
 
 static PyMethodDef ModuleMethods[] = {
     {"sais_lcp_int",  python_sais_int, METH_VARARGS, "Construct a Suffix Array and a LCP Array for a given NumPy integer array.\n:param ndarray T : int array for which SA should be constructed.\n:param k : alphabet size. All integers in T must be >= 0 and < k.\n:return ndarray SA : suffix array for T.\n:return ndarray LCP : lcp array for T."},
@@ -86,6 +90,7 @@ static struct PyModuleDef mod =
     -1,
     ModuleMethods
 };
+
 
 PyMODINIT_FUNC PyInit_pyfischer(void)
 {
